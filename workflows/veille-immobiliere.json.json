@@ -1,0 +1,458 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "hour": 17
+            }
+          ]
+        },
+        "filters": {
+          "labelIds": [
+            "VOTRE_LABEL_ID_GMAIL"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "32af641a-4faa-4ebf-b5b7-e6dad62c59af",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "c6TbBVWXbeTrz56B",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.requestBody }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1008,
+        0
+      ],
+      "id": "dd632402-972e-4b0b-8bdf-da962fa83fd9",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "6oiOYAg1eP7bFGiB",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "VOTRE_EMAIL@gmail.com, EMAIL_PARTENAIRE@gmail.com",
+        "subject": "={{ $json.emailSubject }}",
+        "message": "={{ $json.emailHtml }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1424,
+        208
+      ],
+      "id": "1060198d-bda6-4847-b1b5-e2ce98d309ac",
+      "name": "Send a message",
+      "webhookId": "1e4f0aa8-40ae-4a58-910f-7531b1b77292",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "c6TbBVWXbeTrz56B",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "VOTRE_ID_GOOGLE_SHEETS",
+          "mode": "list",
+          "cachedResultName": "Veille Immobilière - Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/VOTRE_ID_GOOGLE_SHEETS/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Feuille 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/VOTRE_ID_GOOGLE_SHEETS/edit#gid=0"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRange"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        0
+      ],
+      "id": "e4be65ca-0ac6-49c5-a57f-ed1079a0bd5a",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "JroClEx48gPfIVDJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "VOTRE_ID_GOOGLE_SHEETS",
+          "mode": "list",
+          "cachedResultName": "Veille Immobilière - Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/VOTRE_ID_GOOGLE_SHEETS/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Feuille 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/VOTRE_ID_GOOGLE_SHEETS/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "date": ""
+          },
+          "matchingColumns": [
+            "date"
+          ],
+          "schema": [
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "adresse",
+              "displayName": "adresse",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "prix",
+              "displayName": "prix",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "logements",
+              "displayName": "logements",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "revenus_bruts",
+              "displayName": "revenus_bruts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "grm",
+              "displayName": "grm",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cap_rate",
+              "displayName": "cap_rate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "dscr",
+              "displayName": "dscr",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "commentaire",
+              "displayName": "commentaire",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lien",
+              "displayName": "lien",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1424,
+        0
+      ],
+      "id": "072047ad-05a5-4296-bdbe-325b287dc6c3",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "JroClEx48gPfIVDJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  const html = item.json.html || item.json.textHtml || item.json.text || '';\n  const from = (item.json.from || '').toLowerCase();\n  \n  let source = 'inconnu';\n  if (from.includes('centris')) source = 'centris';\n  else if (from.includes('duproprio')) source = 'duproprio';\n  else if (from.includes('realtor')) source = 'realtor';\n  \n  results.push({\n    json: {\n      source: source,\n      emailSubject: item.json.subject || 'Alerte immobilière',\n      emailDate: item.json.date || new Date().toISOString(),\n      emailBody: html.substring(0, 15000),\n    }\n  });\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9d570899-6208-4edd-973c-0cb4d3dac65b",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const emailData = $('Code1').first().json;\nconst sheetRows = $('Get row(s) in sheet').all();\n\nlet historyContext = 'Aucune donnée historique disponible.';\n\nif (sheetRows.length > 0) {\n  const recentProps = sheetRows\n    .slice(-30)\n    .map(row => {\n      const r = row.json;\n      return `${r.date} | ${r.source} | ${r.adresse} | ${r.prix}$ | ${r.type} | GRM:${r.grm} | Score:${r.score}`;\n    })\n    .join('\\n');\n  \n  historyContext = `Voici les ${Math.min(sheetRows.length, 30)} dernières propriétés analysées :\\n${recentProps}`;\n}\n\nreturn [{\n  json: {\n    ...emailData,\n    historyContext: historyContext,\n    totalHistoryCount: sheetRows.length\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "8a01f407-500a-43ea-b860-eada5d0b626e",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const emailData = $input.first().json;\n\nconst systemPrompt = `Tu es un analyste immobilier spécialisé dans le marché des multiplex à Montréal. Tu travailles pour un investisseur qui cherche activement à acheter.\n\nCRITÈRES DE L'ACHETEUR :\n- Budget : 700 000$ à 1 000 000$\n- Types recherchés : Triplex, Quadruplex, Quintuplex uniquement\n- Ignore les duplex, plex (6+), condos, maisons\n- Localisation : Montréal (île) - tous les arrondissements\n- Objectif : investissement locatif (habiter un logement, louer les autres)\n- Priorités : bon rendement locatif, quartier en demande, état acceptable\n- Mise de fonds prévue : 10% (propriétaire-occupant, 3-4 logements)\n\nANALYSE DE PREMIER NIVEAU (toujours) :\nPour chaque propriété pertinente, fournis :\n- adresse (string)\n- prix (number)\n- type : triplex|quadruplex|quintuplex\n- logements (number)\n- revenus_bruts (number ou null)\n- lien (string ou null)\n- grm (number ou null) : prix / revenus bruts annuels TOUTES unités incluses. Impute un loyer marché pour le logement occupé. GRM sous 14 = excellent, 14-17 = acceptable, au-dessus de 17 = alerte.\n- cap_rate (number ou null) : NOI / prix. NOI = revenus bruts x 0.65 (hypothèse 35% dépenses)\n- dscr (number ou null) : NOI / paiements hypothécaires annuels. Hypothèses : taux 5.75%, amortissement 25 ans, mise de fonds 10%. DSCR sous 1.0 = cash flow négatif.\n- cout_net_habiter (number ou null) : paiement hypothécaire mensuel + taxes estimées/12 - revenus locatifs mensuels des autres unités\n- score (number 1-10)\n- commentaire (string, 2-3 phrases)\n\nANALYSE DE DEUXIÈME NIVEAU (seulement quand les revenus bruts sont disponibles) :\nQuand les revenus sont déclarés, calcule toutes les métriques financières. Indique clairement quand tu estimes vs quand tu utilises des données déclarées. Marque les estimations avec [estimé].\n\nQUARTIERS À PRIORISER (score plus élevé) :\n- Rosemont, Villeray, Ahuntsic : établis, forte demande\n- Plateau, Petite-Patrie : premium, excellent rendement\n- NDG (secteur Monkland), Verdun, LaSalle : quartiers familiaux en demande, bonne appréciation\n- Mercier : potentiel d'appréciation\n\nQUARTIERS À ÉVALUER AVEC PRUDENCE :\n- Hochelaga-Maisonneuve : potentiel d'appréciation souvent annoncé mais lent à se concrétiser. Scorer de façon conservatrice, le rendement locatif doit compenser le risque d'appréciation incertain.\n\nSIGNAUX D'ALERTE :\n- GRM supérieur à 17\n- DSCR sous 1.0 au taux stressé\n- Prix anormalement bas\n- Aucun revenu déclaré\n- Éloigné du transport en commun\n- Écart revenus déclarés vs loyers du marché\n\nFORMAT DE RÉPONSE :\nRéponds UNIQUEMENT avec un JSON valide, sans texte avant ni après, sans backticks markdown.\nStructure :\n{\n  \"resume\": \"X propriétés pertinentes sur Y reçues\",\n  \"proprietes\": [\n    {\n      \"adresse\": \"\",\n      \"prix\": 0,\n      \"type\": \"\",\n      \"logements\": 0,\n      \"revenus_bruts\": null,\n      \"lien\": null,\n      \"grm\": null,\n      \"cap_rate\": null,\n      \"dscr\": null,\n      \"cout_net_habiter\": null,\n      \"score\": 0,\n      \"commentaire\": \"\",\n      \"comparaison_historique\": \"\"\n    }\n  ],\n  \"ignorees\": [\n    {\n      \"adresse\": \"\",\n      \"raison\": \"\"\n    }\n  ]\n}`;\n\nconst userMessage = `COMPARAISON HISTORIQUE :\nVoici les propriétés déjà analysées. Compare les nouveaux listings à cet historique.\n\n${emailData.historyContext}\n\nTotal en base : ${emailData.totalHistoryCount}\n\n---\n\nSource : ${emailData.source}\nSujet : ${emailData.emailSubject}\nDate : ${emailData.emailDate}\n\nContenu :\n${emailData.emailBody}`;\n\nreturn [{\n  json: {\n    requestBody: {\n      model: \"claude-sonnet-4-20250514\",\n      max_tokens: 4000,\n      system: [\n        {\n          type: \"text\",\n          text: systemPrompt,\n          cache_control: { type: \"ephemeral\" }\n        }\n      ],\n      messages: [\n        {\n          role: \"user\",\n          content: userMessage\n        }\n      ]\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        0
+      ],
+      "id": "7dddba7a-432a-48f4-b828-6afab1190717",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst source = $('Code2').first().json.source;\nconst today = new Date().toISOString().split('T')[0];\n\n// Extraire le texte de la réponse Claude\nlet rawText = '';\nif (response.content && Array.isArray(response.content)) {\n  rawText = response.content\n    .filter(block => block.type === 'text')\n    .map(block => block.text)\n    .join('');\n}\n\n// Parser le JSON\nlet data;\ntry {\n  // Nettoyer le texte au cas où Claude ajoute des backticks\n  const cleaned = rawText.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  data = JSON.parse(cleaned);\n} catch (e) {\n  // Si le parsing échoue, on envoie quand même un email avec le texte brut\n  return [{\n    json: {\n      sheetRows: [],\n      hasHighScore: true, // envoyer quand même pour debug\n      emailSubject: `Veille Immobilière - ${today} (parsing error)`,\n      emailHtml: `<pre>${rawText}</pre>`\n    }\n  }];\n}\n\n// Préparer les lignes pour Google Sheet\nconst sheetRows = (data.proprietes || []).map(p => ({\n  date: today,\n  source: source,\n  adresse: p.adresse || '',\n  prix: p.prix || '',\n  type: p.type || '',\n  logements: p.logements || '',\n  revenus_bruts: p.revenus_bruts || '',\n  grm: p.grm || '',\n  cap_rate: p.cap_rate || '',\n  dscr: p.dscr || '',\n  score: p.score || 0,\n  commentaire: p.commentaire || '',\n  lien: p.lien || ''\n}));\n\n// Vérifier s'il y a au moins une propriété avec score >= 7\nconst highScoreProps = (data.proprietes || []).filter(p => p.score >= 7);\nconst hasHighScore = highScoreProps.length > 0;\n\n// Construire l'email HTML\nconst propsHtml = (data.proprietes || []).map(p => {\n  const scoreColor = p.score >= 7 ? '#2f855a' : p.score >= 5 ? '#b7791f' : '#c53030';\n  const financials = p.revenus_bruts ? `\n    <tr><td style=\"padding:4px 8px;color:#666;\">Revenus bruts</td><td style=\"padding:4px 8px;font-weight:bold;\">${p.revenus_bruts?.toLocaleString('fr-CA')}$/an</td></tr>\n    <tr><td style=\"padding:4px 8px;color:#666;\">GRM</td><td style=\"padding:4px 8px;font-weight:bold;\">${p.grm || 'N/D'}</td></tr>\n    <tr><td style=\"padding:4px 8px;color:#666;\">Cap rate</td><td style=\"padding:4px 8px;font-weight:bold;\">${p.cap_rate ? (p.cap_rate * 100).toFixed(1) + '%' : 'N/D'}</td></tr>\n    <tr><td style=\"padding:4px 8px;color:#666;\">DSCR (stressé 5.75%)</td><td style=\"padding:4px 8px;font-weight:bold;\">${p.dscr || 'N/D'}</td></tr>\n    <tr><td style=\"padding:4px 8px;color:#666;\">Coût net habiter</td><td style=\"padding:4px 8px;font-weight:bold;\">${p.cout_net_habiter ? p.cout_net_habiter.toLocaleString('fr-CA') + '$/mois' : 'N/D'}</td></tr>\n  ` : '<tr><td style=\"padding:4px 8px;color:#999;\" colspan=\"2\">Revenus non déclarés - analyse financière impossible</td></tr>';\n\n  return `\n  <div style=\"border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:16px;${p.score >= 7 ? 'border-left:4px solid #2f855a;' : ''}\">\n    <div style=\"display:flex;justify-content:space-between;align-items:center;\">\n      <h3 style=\"margin:0;color:#1a365d;\">${p.adresse}</h3>\n      <span style=\"background:${scoreColor};color:white;padding:4px 12px;border-radius:12px;font-weight:bold;font-size:14px;\">${p.score}/10</span>\n    </div>\n    <p style=\"color:#4a5568;margin:8px 0;\">${p.type} | ${p.logements} logements | <strong>${p.prix?.toLocaleString('fr-CA')}$</strong></p>\n    <table style=\"width:100%;border-collapse:collapse;margin:8px 0;\">\n      ${financials}\n    </table>\n    <p style=\"color:#333;margin:8px 0;\">${p.commentaire}</p>\n    ${p.comparaison_historique ? `<p style=\"color:#2b6cb0;font-style:italic;margin:4px 0;\">📊 ${p.comparaison_historique}</p>` : ''}\n    ${p.lien ? `<a href=\"${p.lien}\" style=\"color:#2b6cb0;\">Voir sur ${source}</a>` : ''}\n  </div>`;\n}).join('');\n\nconst ignoreesHtml = (data.ignorees || []).length > 0\n  ? `<div style=\"margin-top:20px;padding:12px;background:#f7fafc;border-radius:8px;\">\n      <h4 style=\"color:#666;margin:0 0 8px 0;\">Propriétés ignorées</h4>\n      ${data.ignorees.map(i => `<p style=\"color:#999;margin:2px 0;\">• ${i.adresse} — ${i.raison}</p>`).join('')}\n    </div>`\n  : '';\n\nconst emailHtml = `\n<div style=\"font-family:Arial,sans-serif;max-width:700px;margin:0 auto;\">\n  <h2 style=\"color:#1a365d;border-bottom:2px solid #2b6cb0;padding-bottom:8px;\">\n    Veille Immobilière - Multiplex Montréal\n  </h2>\n  <p style=\"color:#666;font-size:13px;\">\n    Source : ${source} | Critères : Triplex à Quintuplex | Île de Montréal | 700k$-1M$ | ${today}\n  </p>\n  <p style=\"font-size:15px;color:#333;\"><strong>${data.resume}</strong></p>\n  ${propsHtml}\n  ${ignoreesHtml}\n  <hr style=\"margin-top:30px;border:none;border-top:1px solid #ddd;\">\n  <p style=\"color:#999;font-size:11px;\">Généré par n8n + Claude | Propriétés en base : ${$('Code2').first().json.totalHistoryCount || 0}</p>\n</div>`;\n\nreturn [{\n  json: {\n    sheetRows: sheetRows,\n    hasHighScore: hasHighScore,\n    highScoreCount: highScoreProps.length,\n    totalCount: (data.proprietes || []).length,\n    emailSubject: `🏠 Veille Immobilière - ${highScoreProps.length} opportunité(s) - ${today}`,\n    emailHtml: emailHtml\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        0
+      ],
+      "id": "dec9f22a-8aa2-4107-a1ef-085f5413aa8f",
+      "name": "Code4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "eeb46b77-a5e4-4965-aea2-b75d7a861170",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8f7bc7a3f528be0bf8ad1615cb5cba977420ebf193352696e7220d47971e4e7d"
+  },
+  "id": "5t7FpnFK6ooXbdS5",
+  "tags": []
+}

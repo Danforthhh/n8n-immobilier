@@ -1,0 +1,11 @@
+{
+  "gmail_recipients": "votre.email@gmail.com, email.partenaire@gmail.com",
+  "google_sheets_id": "VOTRE_ID_GOOGLE_SHEETS",
+  "google_sheets_url": "https://docs.google.com/spreadsheets/d/VOTRE_ID_GOOGLE_SHEETS/edit?usp=drivesdk",
+  "gmail_label_id": "VOTRE_LABEL_ID_GMAIL",
+  "n8n_credentials": {
+    "gmailOAuth2_id": "ID_CREDENTIAL_GMAIL_N8N",
+    "httpHeaderAuth_id": "ID_CREDENTIAL_HTTP_N8N",
+    "googleSheetsOAuth2Api_id": "ID_CREDENTIAL_SHEETS_N8N"
+  }
+}
