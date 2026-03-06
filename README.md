@@ -1,119 +1,121 @@
-# Veille Immobilière Automatisée — Multiplex Montréal
+# Automated Real Estate Monitoring — Montreal Multiplexes
 
-Workflow n8n qui analyse automatiquement les alertes immobilières reçues par email (Centris, DuProprio, Realtor) et génère un rapport d'investissement quotidien grâce à l'IA.
+> [Lire en français](README.fr.md)
 
-## Ce que ça fait
+An n8n workflow that automatically analyzes real estate listing alerts received by email (Centris, DuProprio, Realtor) and generates a daily investment report using AI.
 
-1. **Trigger** — Se déclenche chaque jour à 17h sur un label Gmail spécifique
-2. **Extraction** — Parse les emails d'alerte des plateformes immobilières
-3. **Contexte historique** — Récupère les 30 dernières propriétés analysées depuis Google Sheets
-4. **Analyse IA** — Envoie les données à Claude (Anthropic) qui calcule les métriques financières et attribue un score /10
-5. **Stockage** — Sauvegarde chaque propriété analysée dans Google Sheets
-6. **Rapport** — Envoie un email HTML récapitulatif uniquement si une propriété score ≥ 7/10
+## How it works
 
-## Critères d'investissement ciblés
+1. **Trigger** — Fires every day at 5 PM on a dedicated Gmail label
+2. **Extraction** — Parses alert emails from real estate platforms
+3. **Historical context** — Fetches the last 30 analyzed properties from Google Sheets
+4. **AI analysis** — Sends data to Claude (Anthropic), which computes financial metrics and assigns a score out of 10
+5. **Storage** — Saves each analyzed property to Google Sheets
+6. **Report** — Sends an HTML email summary only if at least one property scores ≥ 7/10
 
-| Paramètre | Valeur |
+## Target investment criteria
+
+| Parameter | Value |
 |---|---|
-| Budget | 700 000 $ – 1 000 000 $ |
-| Types | Triplex, Quadruplex, Quintuplex |
-| Zone | Île de Montréal |
-| Mise de fonds | 10 % (propriétaire-occupant) |
-| Taux stressé | 5,75 %, amortissement 25 ans |
+| Budget | $700,000 – $1,000,000 |
+| Property types | Triplex, Quadruplex, Quintuplex |
+| Area | Island of Montreal |
+| Down payment | 10% (owner-occupant) |
+| Stress-test rate | 5.75%, 25-year amortization |
 
-## Métriques calculées par l'IA
+## Metrics computed by the AI
 
-- **GRM** (Gross Rent Multiplier) — Prix / revenus bruts annuels. Seuil : < 14 excellent, 14–17 acceptable
-- **Cap rate** — NOI / prix (hypothèse : 35 % de dépenses)
-- **DSCR** — Couverture du service de la dette. Seuil : > 1,0
-- **Coût net d'habiter** — Paiement hypothécaire + taxes − revenus locatifs des autres unités
+- **GRM** (Gross Rent Multiplier) — Price / gross annual rents. Threshold: < 14 excellent, 14–17 acceptable
+- **Cap rate** — NOI / price (assuming 35% expenses)
+- **DSCR** — Debt service coverage ratio. Threshold: > 1.0
+- **Net cost to live** — Mortgage payment + taxes − rental income from other units
 
-## Stack technique
+## Tech stack
 
-- **[n8n](https://n8n.io)** — Orchestration du workflow (self-hosted via Docker)
-- **Gmail** — Source des alertes + envoi du rapport
-- **Claude API** (Anthropic) — Analyse et scoring des propriétés
-- **Google Sheets** — Historique et tracker des propriétés analysées
+- **[n8n](https://n8n.io)** — Workflow orchestration (self-hosted via Docker)
+- **Gmail** — Alert source + report delivery
+- **Claude API** (Anthropic) — Property analysis and scoring
+- **Google Sheets** — History tracker for analyzed properties
 
-## Prérequis
+## Prerequisites
 
 - Docker & Docker Compose
-- Compte n8n (self-hosted ou cloud)
-- Clé API Anthropic
-- Compte Gmail avec OAuth2 configuré dans n8n
-- Compte Google Sheets avec OAuth2 configuré dans n8n
+- n8n account (self-hosted or cloud)
+- Anthropic API key
+- Gmail account with OAuth2 configured in n8n
+- Google Sheets account with OAuth2 configured in n8n
 
-## Installation
+## Setup
 
-### 1. Cloner le repo
+### 1. Clone the repo
 
 ```bash
 git clone https://github.com/Danforthhh/n8n-immobilier.git
 cd n8n-immobilier
 ```
 
-### 2. Configurer les variables d'environnement
+### 2. Configure environment variables
 
 ```bash
 cp .env.txt .env
 ```
 
-Remplir `.env` :
+Fill in `.env`:
 
 ```env
-N8N_ENCRYPTION_KEY=une_clé_aléatoire_longue
+N8N_ENCRYPTION_KEY=a_long_random_key
 ```
 
-### 3. Lancer n8n
+### 3. Start n8n
 
 ```bash
 docker-compose up -d
 ```
 
-n8n sera accessible sur [http://localhost:5678](http://localhost:5678).
+n8n will be available at [http://localhost:5678](http://localhost:5678).
 
-### 4. Importer le workflow
+### 4. Import the workflow
 
-1. Dans n8n → **Workflows** → **Import from file**
-2. Sélectionner `workflows/veille-immobiliere.json.json`
-3. Reconfigurer les credentials (Gmail, Google Sheets, Anthropic)
+1. In n8n → **Workflows** → **Import from file**
+2. Select `workflows/veille-immobiliere.json.json`
+3. Reconnect your credentials (Gmail, Google Sheets, Anthropic)
 
-### 5. Configurer les valeurs personnelles
+### 5. Configure personal values
 
-Se référer à `config.example.json` pour les paramètres à adapter :
+Refer to `config.example.json` for the parameters to adapt:
 
-| Paramètre | Où le modifier dans n8n |
+| Parameter | Where to update in n8n |
 |---|---|
-| Emails destinataires | Nœud **Send a message** → champ `sendTo` |
-| ID Google Sheets | Nœuds **Get row(s)** et **Append or update** → sélectionner ton fichier |
-| Label Gmail | Nœud **Gmail Trigger** → champ `labelIds` |
+| Recipient emails | **Send a message** node → `sendTo` field |
+| Google Sheets ID | **Get row(s)** and **Append or update** nodes → select your file |
+| Gmail label | **Gmail Trigger** node → `labelIds` field |
 
-### 6. Configurer Gmail
+### 6. Set up Gmail filters
 
-Créer un label Gmail (ex. `Alertes Immobilières`) et y faire rediriger automatiquement les emails de Centris, DuProprio et Realtor via les filtres Gmail.
+Create a Gmail label (e.g. `Real Estate Alerts`) and configure Gmail filters to automatically route emails from Centris, DuProprio, and Realtor to that label.
 
-## Structure du projet
+## Project structure
 
 ```
 n8n-immobilier/
-├── docker-compose.yml          # Configuration Docker pour n8n
+├── docker-compose.yml                    # Docker config for n8n
 ├── workflows/
-│   └── veille-immobiliere.json.json  # Workflow n8n à importer
-├── config.example.json         # Template des valeurs à personnaliser
-├── .env.txt                    # Template des variables d'environnement
+│   └── veille-immobiliere.json.json      # n8n workflow to import
+├── config.example.json                   # Template for values to personalize
+├── .env.txt                              # Environment variables template
 └── .gitignore
 ```
 
-## Personnalisation
+## Customization
 
-Le prompt envoyé à Claude est entièrement configurable dans le nœud **Code3** du workflow. Tu peux y modifier :
+The prompt sent to Claude is fully editable in the **Code3** node of the workflow. You can adjust:
 
-- Les quartiers prioritaires
-- Les seuils de GRM / DSCR
-- Le budget
-- Les types de propriétés recherchés
-- Le format du rapport email
+- Priority neighborhoods
+- GRM / DSCR thresholds
+- Budget range
+- Target property types
+- Email report format
 
-## Licence
+## License
 
 MIT
